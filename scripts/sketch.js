@@ -17,7 +17,7 @@ function preload() {
 
 
 function setup() {
-  createCanvas(400, 400);  //width, height
+  createCanvas(600, 600);  //width, height
   createModules();
   createEmptyGrid();
 }
