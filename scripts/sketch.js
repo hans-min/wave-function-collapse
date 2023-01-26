@@ -7,11 +7,11 @@ const DIM = 20;
 
 //add the images to the moduleImages array
 function preload() {
-  // moduleImages[0] = loadImage("pipes/blank.png");
-  // moduleImages[1] = loadImage("pipes/up.png");
+  // moduleImages[0] = loadImage("assets/pipes/blank.png");
+  // moduleImages[1] = loadImage("assets/pipes/up.png");
   const path = "circuit";
   for (let i = 0; i < 13; i++) {
-    moduleImages[i] = loadImage(`${path}/${i}.png`);
+    moduleImages[i] = loadImage(`assets/${path}/${i}.png`);
   }
 }
 
