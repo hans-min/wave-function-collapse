@@ -1,55 +1,105 @@
-const moduleImages = [];
-const modules = [];
+let moduleImages = [];
+let modules = [];
 let grid = [];
+let DIM = 20;
+let size = 500;
+let startDrawing = false;
 
-//The number of slots is DIM * DIM
-const DIM = 20;
+var dropdown = document.getElementById("dropdown");
+var slider1 = document.getElementById("slider1");
+var slider2 = document.getElementById("slider2");
+var slider1Label = document.querySelector("label[for='slider1']");
+var slider2Label = document.querySelector("label[for='slider2']");
+var button = document.getElementById("button1");
 
-//add the images to the moduleImages array
+function addEventListeners() {
+  // listen for the input event on the slider
+  slider1.addEventListener("input", function () {
+    // update the label with the current value of the slider
+    slider1Label.innerHTML = "Canvas size: " + slider1.value + "x" + slider1.value;
+    resizeCanvas(slider1.value, slider1.value);
+    size = parseInt(slider1.value);
+    createEmptyGrid();
+  });
+  slider2.addEventListener("input", function () {
+    slider2Label.innerHTML = "Grid size: " + slider2.value + "x" + slider2.value;
+    DIM = parseInt(slider2.value);
+    createEmptyGrid();
+  });
+  button.addEventListener("click", function () {
+    disabledChanges();
+    createEmptyGrid();
+  });
+  dropdown.addEventListener("change", function () {
+    createModules();
+  });
+}
+
+//preload all images
 function preload() {
-  // moduleImages[0] = loadImage("assets/pipes/blank.png");
-  // moduleImages[1] = loadImage("assets/pipes/up.png");
+  moduleImages[0] = loadImage("assets/pipes/blank.png");
+  moduleImages[1] = loadImage("assets/pipes/up.png");
   const path = "circuit";
-  for (let i = 0; i < 13; i++) {
-    moduleImages[i] = loadImage(`assets/${path}/${i}.png`);
+  for (let i = 2; i < 15; i++) {
+    moduleImages[i] = loadImage(`assets/${path}/${i - 2}.png`);
   }
 }
 
-
 function setup() {
-  createCanvas(600, 600);  //width, height
+  addEventListeners();
+  createCanvas(size, size);  //width, height
   createModules();
   createEmptyGrid();
 }
 
+function removeDuplicatedmodules(modules) {
+  const uniqueModulesMap = {};
+  for (const module of modules) {
+    const key = module.edges.join(','); // ex: "ABB,BCB,BBA,AAA"
+    uniqueModulesMap[key] = module;
+  }
+  return Object.values(uniqueModulesMap);
+}
+
 //create modules based on the images, with all of their rotations
 function createModules() {
-  //Loaded and created the modules (pipes)
-  // modules[0] = new Module(moduleImages[0], [0,0,0,0]);
-  // modules[1] = new Module(moduleImages[1], [1,1,0,1]);
-  // modules[2] = modules[1].rotate(1);
-  // modules[3] = modules[1].rotate(2);
-  // modules[4] = modules[1].rotate(3);
+  modules = [];
+  var selectedOption = dropdown.options[dropdown.selectedIndex].value;
+  if (selectedOption == "pipes") {
+    //Loaded and created the modules (pipes)
+    modules[0] = new Module(moduleImages[0], ["0", "0", "0", "0"]);
+    modules[1] = new Module(moduleImages[1], ["1", "1", "0", "1"]);
+    modules[2] = modules[1].rotate(1);
+    modules[3] = modules[1].rotate(2);
+    modules[4] = modules[1].rotate(3);
 
-  //Loaded and created the modules (circuits)
-  modules[0] = new Module(moduleImages[0], ["AAA", "AAA", "AAA", "AAA"]);
-  modules[1] = new Module(moduleImages[1], ["BBB", "BBB", "BBB", "BBB"]);
-  modules[2] = new Module(moduleImages[2], ["BBB", "BCB", "BBB", "BBB"]);
-  modules[3] = new Module(moduleImages[3], ["BBB", "BDB", "BBB", "BDB"]);
-  modules[4] = new Module(moduleImages[4], ["ABB", "BCB", "BBA", "AAA"]);
-  modules[5] = new Module(moduleImages[5], ["ABB", "BBB", "BBB", "BBA"]);
-  modules[6] = new Module(moduleImages[6], ["BBB", "BCB", "BBB", "BCB"]);
-  modules[7] = new Module(moduleImages[7], ["BDB", "BCB", "BDB", "BCB"]);
-  modules[8] = new Module(moduleImages[8], ["BDB", "BBB", "BCB", "BBB"]);
-  modules[9] = new Module(moduleImages[9], ["BCB", "BCB", "BBB", "BCB"]);
-  modules[10] = new Module(moduleImages[10], ["BCB", "BCB", "BCB", "BCB"]);
-  modules[11] = new Module(moduleImages[11], ["BCB", "BCB", "BBB", "BBB"]);
-  modules[12] = new Module(moduleImages[12], ["BBB", "BCB", "BBB", "BCB"]);
+  } else if (selectedOption == "circuits") {
+    //Loaded and created the modules (circuits)
+    modules[0] = new Module(moduleImages[2], ["AAA", "AAA", "AAA", "AAA"]);
+    modules[1] = new Module(moduleImages[3], ["BBB", "BBB", "BBB", "BBB"]);
+    modules[2] = new Module(moduleImages[4], ["BBB", "BCB", "BBB", "BBB"]);
+    modules[3] = new Module(moduleImages[5], ["BBB", "BDB", "BBB", "BDB"]);
+    modules[4] = new Module(moduleImages[6], ["ABB", "BCB", "BBA", "AAA"]);
+    modules[5] = new Module(moduleImages[7], ["ABB", "BBB", "BBB", "BBA"]);
+    modules[6] = new Module(moduleImages[8], ["BBB", "BCB", "BBB", "BCB"]);
+    modules[7] = new Module(moduleImages[9], ["BDB", "BCB", "BDB", "BCB"]);
+    modules[8] = new Module(moduleImages[10], ["BDB", "BBB", "BCB", "BBB"]);
+    modules[9] = new Module(moduleImages[11], ["BCB", "BCB", "BBB", "BCB"]);
+    modules[10] = new Module(moduleImages[12], ["BCB", "BCB", "BCB", "BCB"]);
+    modules[11] = new Module(moduleImages[13], ["BCB", "BCB", "BBB", "BBB"]);
+    modules[12] = new Module(moduleImages[14], ["BBB", "BCB", "BBB", "BCB"]);
+  } else {
+    print("ERROR: No module set selected");
+  }
 
-  for (let i = 2; i < 13; i++) {
+  const modulesLength = modules.length;
+  for (let i = 0; i < modulesLength; i++) {
+    let tempModules = [];
     for (let j = 1; j < 4; j++) {
-      modules.push(modules[i].rotate(j));
+      tempModules.push(modules[i].rotate(j));
     }
+    tempModules = removeDuplicatedmodules(tempModules);
+    modules = modules.concat(tempModules);
   }
 
   //Generate the adjacency rules base on the edges 
@@ -59,16 +109,19 @@ function createModules() {
 }
 
 function createEmptyGrid() {
+  grid = [];
   //Create the possibleModules array for each slot 
   //(contains all possible modules)
   let allPossibleModules = [];
   for (let i = 0; i < modules.length; i++) {
     allPossibleModules = allPossibleModules.concat(i);
   }
+  print("DIM: " + DIM);
   //Create slot for each spot in the grid
   for (let i = 0; i < DIM * DIM; i++) {
     grid[i] = new Slot(allPossibleModules, i);
   }
+  print("grid length: " + grid.length);
 }
 
 function collapseASlot(gridCopy) {
@@ -88,13 +141,13 @@ function collapseASlot(gridCopy) {
   const pick = random(slot.possibleModules);
 
   //If there are no more possible modules, create a new grid
+  //TODO: don't create a new grid, return and tell the user that the puzzle 
+  //is unsolvable and allow them to restart
   if (pick === undefined) {
     createEmptyGrid();
     return;
   }
-  console.log("slot index:" + slot.index);
-  console.log("slot possibleModules:" + slot.possibleModules);
-  console.log("picked:" + pick);
+  console.log("collapsed slot index:" + slot.index);
   //change the slot.possibleModules here actually changes 
   //the grid array(check out the test.js)
   slot.possibleModules = [pick];
@@ -192,39 +245,55 @@ function makeNextGrid() {
 }
 
 function draw() {
-  background(0);
-  const w = width / DIM;
-  const h = height / DIM;
+  if (startDrawing) {
+    background(0);
+    const w = width / DIM;
+    const h = height / DIM;
 
-  //Draw the grid with collapsed slots (if any) and empty rectangles
-  for (let i = 0; i < DIM; i++) {
-    for (let j = 0; j < DIM; j++) {
-      let slot = grid[i * DIM + j];
-      if (slot.collapsed) {
-        image(modules[slot.possibleModules[0]].img, j * w, i * h, w, h);
-      } else {
-        stroke(255);
-        fill(0, 0, 0);
-        rect(j * w, i * h, w, h);
+    //Draw the grid with collapsed slots (if any) and empty rectangles
+    for (let i = 0; i < DIM; i++) {
+      for (let j = 0; j < DIM; j++) {
+        let slot = grid[i * DIM + j];
+        if (slot.collapsed) {
+          image(modules[slot.possibleModules[0]].img, j * w, i * h, w, h);
+        } else {
+          stroke(255);
+          fill(0, 0, 0);
+          rect(j * w, i * h, w, h);
+        }
       }
     }
+
+    //Copy the grid, remove collapsed slots
+    let gridCopy = grid.slice();
+    gridCopy = gridCopy.filter(slot => {
+      return !slot.collapsed;
+    });
+    //image is finished, stop drawing
+    if (gridCopy.length === 0) {
+      allowChanges();
+      return;
+    }
+
+    collapseASlot(gridCopy);
+    makeNextGrid();
+
+    //noLoop();
   }
-
-  //Copy the grid, remove collapsed slots
-  let gridCopy = grid.slice();
-  gridCopy = gridCopy.filter(slot => {
-    return !slot.collapsed;
-  });
-  if (gridCopy.length === 0) {
-    return;
-  }
-
-  collapseASlot(gridCopy);
-  makeNextGrid();
-
-  //noLoop();
 }
 
-function mousePressed() {
-  createEmptyGrid();
+function allowChanges() {
+  startDrawing = false;
+  slider1.disabled = false;
+  slider2.disabled = false;
+  button.disabled = false;
+  dropdown.disabled = false;
+}
+
+function disabledChanges() {
+  slider1.disabled = true;
+  slider2.disabled = true;
+  button.disabled = true;
+  dropdown.disabled = true;
+  startDrawing = true;
 }

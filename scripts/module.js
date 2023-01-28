@@ -56,7 +56,7 @@ function reverseString(str) {
 }
 
 function CompareSocket(a, b) {
-    return a == reverseString(b);//b;
+    return a == reverseString(b);
 }
 
 
