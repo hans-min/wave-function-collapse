@@ -6,6 +6,6 @@ Inspired by Dan Shiffman from Coding Train, I recreated the this algorithm using
 
 [Wave Function Collapse Youtube video](https://www.youtube.com/watch?v=rI_y2GAlQFM)
 
-![GIF animation of WFC algorithm](./assets/gif/Animation.gif)
+<img src="./assets/gif/Animation.gif" width="500" height="500"/>
 
 # [Live demo](https://hans-min.github.io/wave-function-collapse/)
