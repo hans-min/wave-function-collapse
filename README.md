@@ -9,5 +9,3 @@ Inspired by Dan Shiffman from Coding Train, I recreated the this algorithm using
 ![GIF animation of WFC algorithm](./assets/gif/Animation.gif)
 
 # [Live demo](https://hans-min.github.io/wave-function-collapse/)
-
-left click to start again
