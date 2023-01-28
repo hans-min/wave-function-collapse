@@ -1,8 +1,6 @@
 let moduleImages = [];
 let modules = [];
 let grid = [];
-let DIM = 20;
-let size = 500;
 let startDrawing = false;
 
 var dropdown = document.getElementById("dropdown");
@@ -11,6 +9,9 @@ var slider2 = document.getElementById("slider2");
 var slider1Label = document.querySelector("label[for='slider1']");
 var slider2Label = document.querySelector("label[for='slider2']");
 var button = document.getElementById("button1");
+
+let DIM = parseInt(slider2.value);
+let size = parseInt(slider1.value);
 
 function addEventListeners() {
   // listen for the input event on the slider
